@@ -5,8 +5,6 @@ import Data.Function ((&))
 import Data.Functor ((<&>))
 import qualified Data.IntMap.Strict as M
 import Data.List (findIndex, scanl')
-import Data.Word (Word32)
-import Numeric (showBin)
 
 solve :: Int -> IO (Maybe Int)
 solve n =

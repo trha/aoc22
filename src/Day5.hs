@@ -1,7 +1,5 @@
 {-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE ViewPatterns #-}
 
 module Day5 where
 
@@ -13,27 +11,25 @@ import Data.Foldable (forM_)
 import Data.Function ((&))
 import Data.Functor ((<&>))
 import Data.List (break, foldl', inits, transpose, unfoldr)
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
 import qualified Data.Vector as V hiding (modify)
 import qualified Data.Vector.Mutable as V
+import qualified Data.ByteString.Char8 as B
 
-solve :: (T.Text -> T.Text) -> IO String
 solve permute =
-  T.readFile "src/Day5.txt"
-    <&> ( T.lines
-            >>> break T.null
+  B.readFile "src/Day5.txt"
+    <&> ( B.lines
+            >>> break B.null
             >>> ( \(stacks, insts) ->
                     ( stacks
-                        & T.transpose
-                        & map (T.filter isAsciiUpper)
-                        & filter (not . T.null)
+                        & B.transpose
+                        & map (B.filter isAsciiUpper)
+                        & filter (not . B.null)
                         & V.fromList
                     , insts
                         & tail
                         & map
-                          ( T.words
-                              >>> map (T.unpack >>> read)
+                          ( B.words
+                              >>> map (B.readInt >>> (\(Just (n, _)) -> n))
                               >>> \[_move, crateCount, _from, src, _to, dest] -> (crateCount :: Int, src - 1, dest - 1)
                           )
                     )
@@ -42,16 +38,16 @@ solve permute =
                     stacks <- V.unsafeThaw stacks
                     forM_ insts \(crateCount, i, j) -> do
                       src <- V.read stacks i
-                      let (moved, remaining) = T.splitAt crateCount src
-                      V.modify stacks (T.append (permute moved)) j
+                      let (moved, remaining) = B.splitAt crateCount src
+                      V.modify stacks (B.append (permute moved)) j
                       V.write stacks i remaining
                     V.unsafeFreeze stacks
                 )
             >>> V.toList
-            >>> map T.head
+            >>> map B.head
         )
 
-part1 = solve T.reverse
+part1 = solve B.reverse
 part2 = solve id
 
 -- >>> part1

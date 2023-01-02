@@ -8,7 +8,6 @@
 
 module Day19 where
 
-import Control.Applicative (ZipList)
 import Control.Arrow ((>>>))
 import Control.Monad
 import Control.Monad.Trans.State.Strict (State, execState, get, modify')
@@ -82,7 +81,7 @@ dfs bp t rocks robots = execState (go t rocks robots) 0
                       fmap maximum . sequence $
                         ( \req rok robo ->
                             if req > rok
-                              then (req - rok + robo - 1) `safeQuote` robo
+                              then (req - rok + robo - 1) `safeQuot` robo
                               else Just 0
                         )
                           <$> required
@@ -105,5 +104,5 @@ ints b
   | Just (i, b') <- B.readInt b = i : ints b'
   | otherwise = ints $ B.tail b
 
-safeQuote _ 0 = Nothing
-safeQuote a b = Just $ a `quot` b
+safeQuot _ 0 = Nothing
+safeQuot a b = Just $ a `quot` b
